@@ -1,0 +1,41 @@
+# SAP Script에 대한 기본 정보
+# SAP Script 이름, 파일이름과 동일하게 할 것
+name: "sap_04_picking_list"
+
+# SAP 다운로드 형태
+# @txt --> txt 파일로 다운
+# @txt_xlsx --> txt 파일로 다운받아 xlsx 형태로 변경
+# @pdf --> pdf 파일로 다운 
+run_type: "@txt_xlsx"
+
+# 데이터를 여러개 다운받을 때 다운받을 다운받는 구분 키 값 관련
+reference_data: "sap_01_lcs"
+# 반복 구문 결정 방법
+# [1, 2, 3] --> for 문 3번
+# [12, 3] --> 1&2를 for 한번 후 3을 for
+# [123] --> 1&2&3을 한번에 for
+iterate_key: "1&2&3"
+
+# SAP에 데이터 다운받을 때 입력하는 정보
+# 기본 입력 정보
+# Arg(0) : sap t-code
+sap_t_code: "YMKRPICK"
+# Arg(1) : Plant code
+plant_code: "1000"
+# Arg(2)
+start_date: -7
+end_date: 30
+
+input_code1: ["1A", "1B", "1C"]
+input_code2: ["2A", "2B", "2C"]
+input_code3: ["3A", "3B", "3C"]
+
+file_save_path: "\\\\vcn.ds.volvo.net\\vce-cha\\CEPROJ01\\019764\\001-Production_Info\\SAP-04-Picking_list\\"
+file_name: ["@line", "@date", "@no", "@model", "@sn"]
+file_encoding: "0000" 
+del_row_no: [1, 2, 3, 4, 6, 8]
+del_col_no: [1, 4]
+
+make_data: False
+data_col_list: []
+data_col_rename_list: []

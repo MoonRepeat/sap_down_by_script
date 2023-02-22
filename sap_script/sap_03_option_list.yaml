@@ -1,0 +1,58 @@
+# SAP 다운로드 파일의 형태
+# @txt --> txt 파일로 다운
+# @txt_xlsx --> txt 파일로 다운받아 xlsx 형태로 변경
+run_type: "@txt_xlsx"
+
+# SAP Script 실행 결과 최종 파일 저장 경로
+file_save_path: "\\\\vcn.ds.volvo.net\\vce-cha\\CEPROJ01\\019764\\001-Production_Info\\SAP-03-Option_list\\"
+
+# SAP Script 실행 중 Script 실행 시간이 너무 오래 걸릴 경우 중단하는 시간(초)
+time_out: 600
+
+# 데이터를 다운받을 때 참조 정보를 가져올 Script 이름 입력. 필요 없으면 "" ex) "sap_01_lcs"
+reference_data: "sap_01_lcs"
+
+# SAP Script를 작동할 때 입력 되는 값 중 기본적인 값 정의
+# Arg(0) : sap t-code
+sap_t_code: "YCFMPPR052"
+# Arg(1) : Plant code
+plant_code: "1000"
+# Arg(2) : Strat date --> 오늘 일자 기준으로 +- 숫자를 입력
+start_date: -3
+# Arg(3) : End date --> 오늘 일자 기준으로 +- 숫자를 입력
+end_date: 7
+
+# SAP Script를 작동할 때 입력 값을 넣는 방식 정의
+# input_code1의 값만 순서대로 입력 할 경우 "1" <-- input_code1의 값만 사용
+# input_code1, 2의 값을 같은 순서로 입력 할 경우 "1&2" <-- input_code1, 2를 동시에 입력
+# input_code1, 2의 값을 조합으로 입력 할 경우 "1|2" <-- input_code1, 2의 조합을 입력
+# ex) "1&2|3&4"
+iterate_key: "1"
+
+# SAP Script를 작동할 때 키가 되는 입력 값 지정
+# 3개 이상이 필요 할 경우 줄을 추가하여 입력 하면 됨
+# ex) input_code4: ["1", "2", "3"]
+input_code1: ["@po"]
+input_code2: []
+input_code3: []
+
+# SAP Script 실행 결과 생성 되는 파일의 파일 이름 지정
+# 파일 이름에 넣기 원하는 부분 입력하면 됨
+# file_name: ["@input_code1", "XYZ", "ABC"] --> 230114-LCS-E10-XYZ-ABC.txt
+file_name: ["@line", "@date", "@no", "@model", "@sn"]
+
+# ===== run_type : @txt or @txt_xlsx 인 경우 아래 항목 작성 =====
+# run type이 @txt 이거나 @txt_xlsx 일 경우 필요한 항목
+# txt 파일의 인코딩 지정. "0000" 사용 할 것
+file_encoding: "0000"
+# txt 파일로 데이터 받을 경우 내부에 필요 없어서 삭제가 필요한 행과 열 번호를 입력
+del_row_no: [1, 2, 3, 4, 6]
+del_col_no: [1]
+
+# 추후 다른 Script에서 이 Script의 결과를 이용 할 경우 사용 하는 영역
+# make_data --> true일 경우 다른 Script에서 사용 가능, false 일경우 다른 Script에서 데이터 사용 하지 않음
+make_data: False
+# 다른 Script에서 데이터 사용을 할 경우 사용이 필요한 열 값 정의
+data_col_list: []
+# 위의 열값을 사용이 용이하게 이름을 변경 하기 위해 정의
+data_col_rename_list: []
