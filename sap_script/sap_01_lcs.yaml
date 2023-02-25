@@ -4,10 +4,11 @@
 run_type: "@txt_xlsx"
 
 # SAP Script 실행 결과 최종 파일 저장 경로
-file_save_path: "\\\\vcn.ds.volvo.net\\vce-cha\\CEPROJ01\\019764\\001-Production_Info\\SAP-01-LCS\\"
+#file_save_path: "\\\\vcn.ds.volvo.net\\vce-cha\\CEPROJ01\\019764\\001-Production_Info\\SAP-01-LCS\\"
+file_save_path: "d:\\temp\\"
 
 # SAP Script 실행 중 Script 실행 시간이 너무 오래 걸릴 경우 중단하는 시간(초)
-time_out: 600
+time_out: 60000
 
 # 데이터를 다운받을 때 참조 정보를 가져올 Script 이름 입력. 필요 없으면 "" ex) "sap_01_lcs"
 reference_data: ""
@@ -18,9 +19,9 @@ sap_t_code: "YMIIPICK"
 # Arg(1) : Plant code
 plant_code: "1000"
 # Arg(2) : Strat date --> 오늘 일자 기준으로 +- 숫자를 입력
-start_date: -3
+start_date: -365
 # Arg(3) : End date --> 오늘 일자 기준으로 +- 숫자를 입력
-end_date: 7
+end_date: 0
 
 # SAP Script를 작동할 때 입력 값을 넣는 방식 정의
 # input_code1의 값만 순서대로 입력 할 경우 "1" <-- input_code1의 값만 사용
@@ -33,7 +34,7 @@ iterate_key: "1"
 # 3개 이상이 필요 할 경우 줄을 추가하여 입력 하면 됨
 # ex) input_code4: ["1", "2", "3"]
 #input_code1: ["LCS-E10", "LCS-E20", "LCS-L10", "LCS-E40", "LCS-E50", "LCS-E60"]
-input_code1: ["LCS-E10", "LCS-E50"]
+input_code1: ["LCS-E10", "LCS-E20", "LCS-L10", "LCS-E40", "LCS-E50"]
 input_code2: []
 input_code3: []
 

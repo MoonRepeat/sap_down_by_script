@@ -7,7 +7,7 @@ user_pass: "vo202212"
 # 자동으로 실행해서 다운 받을 작업 리스트
 # 아래에 적은 이름과 동일한 vbs 및 yaml 파일을 생성 해야함
 #run_sap_script: ["sap_01_lcs", "sap_02_lcs_sub", "sap_03_option_list", "sap_04_picking_list"]
-run_sap_script: ["sap_02_lcs_sub"]
+run_sap_script: ["sap_03_option_list"]
 
 # SAP Client의 날짜 형식 지정 ex) 2022.05.25 --> %Y.%m.%d
 date_input_type: "%Y.%m.%d"
