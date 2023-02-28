@@ -1,0 +1,67 @@
+# Enter the SAP download type
+# ex1) @txt --> Download txt file
+# ex2) @txt_xlsx --> Download txt file and converting xlsx file
+run_type: "@txt_xlsx"
+
+# Enter the folder path to save the final result file
+# ex) "C:\\Temp\\sap_result\\"
+file_save_path: "C:\\Temp\\sap_result\\"
+
+# Enter the time to stop SAP Script execution if the Script execution takes too long(second)
+# ex) 600 --> 10 minutes
+time_out: 600
+
+# Enter the script name to obtain reference information when downloading data. If not needed, ""
+# ex) "" <-- No need reference data
+# ex) "SAP_CA03"
+reference_data: ""
+
+# Arg(0) SAP t-code
+# ex) "CA03"
+sap_t_code: ""
+# Arg(1) SAP plant code
+# ex) "1000"
+plant_code: ""
+# Arg(2) Strat date, Arg(3) end date : Enter the integer (0 = today, -3 = today - 3, 10 = today + 10)
+start_date: 0
+end_date: 0
+
+# Define how input values ​​are entered when operating SAP Script
+# If only the values ​​of input_code1 are entered in sequence : "1"
+# If input_code1, 2 values ​​are entered in the same order "1&2"
+# When entering the values ​​of input_code1 and 2 in combination : "1|2"
+# ex) "1&2|3&4|5&6"
+iterate_key: ""
+
+# If necessary, multiple input_code? can be created and used.
+# ex) input_code1 = ["1", "2"]
+# ex) input_code2 = ["A", "B"]
+# ex) input_code3 = ["X", "Y"]
+# ex) Result 1 : Arg(7) = "1", Arg(8) = "A", Arg(9) = "X"
+# ex) Result 1 : Arg(7) = "1", Arg(8) = "A", Arg(9) = "Y"
+# ex) Result 1 : Arg(7) = "2", Arg(8) = "B", Arg(9) = "X"
+# ex) Result 1 : Arg(7) = "2", Arg(8) = "B", Arg(9) = "Y"
+input_code1: []
+input_code2: []
+
+# Specify the name of the file created as a result of running the SAP Script
+# ex) file_name: ["@input_code1", "@input_code2", "@input_code3", "ABC"] --> 230114-1-A-X-ABC.txt
+file_name: []
+
+# Specifies the encoding of the txt file. Use "0000" (unicode)
+file_encoding: "0000"
+# Enter numbers to delete unnecessary rows and columns in the downloaded txt file
+# ex) [1, 2, 3, 4, 5, 6, 7, 9]
+del_row_no: []
+del_col_no: []
+
+# below setting is when using the result of this script in another script later
+# If true, it can be used in other scripts. If it is false, data is not used in other scripts.
+# ex) True
+make_data: False
+# Define the column headings of the downloaded txt file
+# ex) ["Production Date", "Sales order no", "Part No"]
+data_col_list: []
+# Define values ​​to override column headings
+# ex) ["date", "son", "pn"]
+data_col_rename_list: []

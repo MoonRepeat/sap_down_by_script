@@ -1,14 +1,6 @@
-' Arg(0) : tcode - "YMKRPICK"
-' Arg(1) : plant code - "1000"
-' Arg(2) : 시작 일자 - "2022.11.01"
-' Arg(3) : 종료 일자 - "2022.12.30"
-' Arg(4) : 파일 저장 위치 - "C:\Users\ec20685\Downloads\"
-' Arg(5) : 파일 이름 - "12345.txt"
-' Arg(6) : 파일 인코딩 = "0000"
-' Arg(7) : Model - "EC350DL"
-' Arg(8) : SN - "271389"
 Dim Arg
 Set Arg = WScript.Arguments
+On Error Resume Next
 
 If Not IsObject(application) Then
    Set SapGuiAuto  = GetObject("SAPGUI")

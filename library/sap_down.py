@@ -224,7 +224,7 @@ class SapDown:
             for j in range(len(locals()['{}{}'.format('input_code', i)])):
                 locals()['{}{}'.format('input_code', i)][j] = [locals()['{}{}'.format('input_code', i)][j]]
         
-        # & 형태는 모두 합치과 | 형태만 남도록 변경
+        # & 형태는 모두 합치고 | 형태만 남도록 변경
         i = 0
         iterate_key_list_copy = iterate_key_list.copy()
         while i != len(iterate_key_list_copy):
