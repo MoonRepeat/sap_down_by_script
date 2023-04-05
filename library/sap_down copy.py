@@ -8,6 +8,7 @@ from tqdm import tqdm
 from itertools import product
 from library import sap_utils
 
+
 class SapDown:
     __sap_setting = dict()
     
@@ -79,8 +80,6 @@ class SapDown:
         # SAP Client 실행 및 실행 될 때 까지 일정 시간 대기(60초)
         os.system(sap_run_batch)
         time.sleep(60)
-        
-        return None
 
     def end_sap_client(self) -> None:
         """SAP Client 종료 및 Windows Visual Basic Script 종료(Taskkill 사용)
@@ -100,8 +99,6 @@ class SapDown:
         time.sleep(10)
         os.popen(sap_run_batch2)
         time.sleep(10)
-        
-        return None
 
     def restart_sap_client(self) -> None:
         """SAP Client 재시작
@@ -112,10 +109,8 @@ class SapDown:
         # SAP Client 종료 --> 실행
         self.end_sap_client()
         self.start_sap_client()
-        
-        return None
     
-    def down_file_sap(self) -> list:
+    def down_file_sap(self) -> None:
         """SAP에서 파일 받는 VBS를 돌리는 시작 함수
 
         Returns:
@@ -125,19 +120,7 @@ class SapDown:
                       '@txt_xlsx': self.__down_txt_to_xlsx_from_sap,
                       '@pdf': self.__down_pdf_from_sap
                       }
-        
-        iterate_list = self.__make_iterate_list()
-        file_name_list = list()
-        
-        for input_code_list in tqdm(iterate_list):
-            file_name = fun_switch[self.__script_setting['run_type']](input_code_list)
-            file_name_list.append(file_name)
-            
-            sap_utils.SapUtils.move_file(file_name, 
-                                         self.__script_setting['file_save_path'], 
-                                         file_path=self.__sap_setting['tempfile_save_path'])
-            
-            file_name_list.append(file_name)
+        file_name_list = fun_switch[self.__script_setting['run_type']]()
         
         return file_name_list
 
@@ -164,15 +147,6 @@ class SapDown:
             result_df = result_df[result_df[query_key] == rf_code_dict[query_key]]
         
         return result_df
-
-    def __add_my_df(self, pd_data: pd.DataFrame) -> None:
-        pd_data.columns = self.__script_setting['data_col_rename_list']
-        pd_data = pd_data.applymap(str)
-        for col_name in self.__script_setting['data_col_rename_list']:
-            pd_data[col_name] = pd_data[col_name].str.replace(pat=r'[^\w]', repl=r'', regex=True)
-        self.__sap_my_df = pd.concat([self.__sap_my_df, pd_data])
-        
-        return None
 
     def __make_file_name(self, input_code_list: list, **kwargs) -> str:
         """SAP Query에 사용할 code에 대한 list를 받아 Script Setting의 File Name 룰과 같이 확인 하여 파일 이름을 반환
@@ -323,55 +297,64 @@ class SapDown:
         
         return  run_sap_cmd
 
-    def __down_txt_from_sap(self, input_code_list: list) -> list:
+    def __down_txt_from_sap(self) -> list:
         """SAP에서 txt 형태의 파일을 다운 받는다. 다운 받은 파일 기반으로 sap_my_df 도 업데이트 한다.
-
-        Args:
-            input_code_list (list): SAP에 이력할 입력 값 리스트
 
         Returns:
             list: 다운 받은 파일명 리스트 반환
         """
-        file_name = self.__make_file_name(input_code_list, extension='txt')
-        run_sap_cmd = self.__get_sap_cmd(file_name, input_code_list)
+        iterate_list = self.__make_iterate_list()
+        file_name_list = list()
         
-        try:
-            self.__run_sap_script(run_sap_cmd)
+        sap_utils.SapUtils.delete_file(file_path=SapDown.__sap_setting['tempfile_save_path'], file_extension='txt')
+        
+        for input_code_list in tqdm(iterate_list):
+            file_name = self.__make_file_name(input_code_list, extension='txt')
+            run_sap_cmd = self.__get_sap_cmd(file_name, input_code_list)
             
-            if not sap_utils.SapUtils.chk_file_exist(file_name, file_path=SapDown.__sap_setting['tempfile_save_path']):
-                file_name = file_name.replace('.txt','-error.txt')
+            try:
+                self.__run_sap_script(run_sap_cmd)
+                
+                if not sap_utils.SapUtils.chk_file_exist(file_name, file_path=SapDown.__sap_setting['tempfile_save_path']):
+                    file_name = file_name.replace('.txt','-error.txt')
+                    with open('{}{}'.format(SapDown.__sap_setting['tempfile_save_path'], file_name), 'w'):
+                        pass
+            except:
+                file_name = file_name.replace('.txt','-timeout.txt')
                 with open('{}{}'.format(SapDown.__sap_setting['tempfile_save_path'], file_name), 'w'):
                     pass
-        except:
-            file_name = file_name.replace('.txt','-timeout.txt')
-            with open('{}{}'.format(SapDown.__sap_setting['tempfile_save_path'], file_name), 'w'):
-                pass
-            self.restart_sap_client()
-        else:
-            self.__remove_txt_rows_cols(file_name)
-            if self.__script_setting['make_data']:
-                if sap_utils.SapUtils.get_file_size(file_name, file_path=SapDown.__sap_setting['tempfile_save_path']) != 0:
-                    temp_df = self.__change_txt_to_dataframe(file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])[self.__script_setting['data_col_list']]
-                    self.__add_my_df(temp_df)
+                self.restart_sap_client()
+            else:
+                self.__remove_txt_rows_cols(file_name)
+                if self.__script_setting['make_data']:
+                    if sap_utils.SapUtils.get_file_size(file_name, file_path=SapDown.__sap_setting['tempfile_save_path']) != 0:
+                        temp_df = self.__change_txt_to_dataframe(file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])[self.__script_setting['data_col_list']]
+                        temp_df.columns = self.__script_setting['data_col_rename_list']
+                        temp_df = temp_df.applymap(str)
+                        for col_name in self.__script_setting['data_col_rename_list']:
+                            temp_df[col_name] = temp_df[col_name].str.replace(pat=r'[^\w]', repl=r'', regex=True)
+                        self.__sap_my_df = pd.concat([self.__sap_my_df, temp_df])
+            
+            file_name_list.append(file_name)
         
-        return file_name
+        return file_name_list
     
-    def __down_txt_to_xlsx_from_sap(self, input_code_list) -> list:
+    def __down_txt_to_xlsx_from_sap(self) -> list:
         """SAP에서 txt 파일 다운 받아서 slsx 파일로 변환
-
-        Args:
-            input_code_list (list): SAP에 이력할 입력 값 리스트
 
         Returns:
             list: 파일 이름 list
         """
-        file_name = self.__down_txt_from_sap(input_code_list)
+        file_name_list = self.__down_txt_from_sap()
+        new_file_name_list = list()
         
-        df = self.__change_txt_to_dataframe(file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])
-        new_file_name = file_name.replace('.txt', '.xlsx')
-        self.__change_dataframe_to_xlsx(df, new_file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])
+        for file_name in file_name_list:
+            df = self.__change_txt_to_dataframe(file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])
+            new_file_name = file_name.replace('.txt', '.xlsx')
+            self.__change_dataframe_to_xlsx(df, new_file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])
+            new_file_name_list.append(new_file_name)
         
-        return new_file_name
+        return new_file_name_list
     
     # 미완성 만들어야 함.
     def __down_pdf_from_sap(self):

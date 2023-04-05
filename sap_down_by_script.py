@@ -38,12 +38,6 @@ if __name__ == '__main__':
         
         # SAP Script 실행하여 파일 다운로드
         file_name_list = locals()[operation].down_file_sap()
-        
-        # 다운 받은 파일을 script_setting의 저장 위치를 참조하여 파일 이동
-        for file_name in file_name_list:
-            sap_utils.SapUtils.move_file(file_name,
-                                         script_setting['file_save_path'],
-                                         file_path=sap_setting['tempfile_save_path'])
     
     locals()[sap_setting['run_sap_script'][0]].end_sap_client()
     print("실행이 완료 되었습니다.")
