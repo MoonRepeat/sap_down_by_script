@@ -5,7 +5,7 @@ from library import sap_down
 from library import sap_utils
 
 if __name__ == '__main__':
-    # 셋팅 파일인 sap_setting.yaml 파일을 읽어 sap_setting에 Dict 형태로 저장
+    # Read the "sap_setting.yaml" file for setting
     with open('.\\sap_setting.yaml', 'r', encoding='utf-8') as f:
         sap_setting = yaml.load(f, Loader=yaml.FullLoader)
 
