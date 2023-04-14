@@ -1,30 +1,27 @@
-# Input "True" if SAP client is auto login and False otherwise, and enter your user_id and user_pass
+# SAP Client가 자동 로그인 일 경우 --> True
+# 자동 로그인이 아닌 경우 --> False --> 이 경우 user_id와 user_pass도 입력 해야함.
 auto_login: False
-user_id: ""
-user_pass: ""
+user_id: "ec20685"
+user_pass: "Asdvo2302@"
 
-# Input work list. The value of list must be the same as the SAP vbs script file name
-# ex) run_sap_script: ["sap_ca03", "sap_cs03", "sap_cc03"]
-run_sap_script: ["template"]
+# 자동으로 실행해서 다운 받을 작업 리스트
+# 아래에 적은 이름과 동일한 vbs 및 yaml 파일을 생성 해야함
+run_sap_script: ["sap_01_lcs", "sap_02_lcs_sub", "sap_03_option_list", "sap_04_picking_list"]
 
-# Enter the date format of your SAP client
-# ex) 2022.05.25 --> %Y.%m.%d
+# SAP Client의 날짜 형식 지정 ex) 2022.05.25 --> %Y.%m.%d
 date_input_type: "%Y.%m.%d"
 
-# Enter the SAP server setting
-# ex) sap_system: "ABC", sap_client: "100"
-sap_system: ""
-sap_client: ""
+# ====== 아래는 필요 할 경우 수정 하여 사용 할 것 ======
+# SAP Client Log in 관련 정보
+sap_system: "VCE"
+sap_client: "100"
 
-# Enter the location of the temporary folder to use for tasks 
-# ex) "C:\\Temp\\sap_temp\\"
+# SAP VBS Script & 설정 & 파일 저장 위치
+sap_script_path: ".\\sap_script\\"
+
+# SAP VBS Script 작동 중 임시로 사용 할 폴더 위치
 tempfile_save_path: "C:\\Temp\\sap_temp\\"
 
-# Enter the SAP client installation location and program file name
-# ex) sap_program_path: "c:\\Progra~2\\SAP\\FrontEnd\\SAPgui\\"
-# ex) sap_program_file: "saplogon.exe"
+# SAP 프로그램 관련 설치 위치 및 프로그램 파일 이름
 sap_program_path: "c:\\Progra~2\\SAP\\FrontEnd\\SAPgui\\"
 sap_program_file: "saplogon.exe"
-
-# File path of SAP VBS Script
-sap_script_path: ".\\sap_script\\"

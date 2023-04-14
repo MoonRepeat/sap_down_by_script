@@ -1,44 +1,52 @@
 import time
 import yaml
-from tqdm import tqdm
-from library import sap_down
-from library import sap_utils
+
+import library as lib
 
 if __name__ == '__main__':
-    # Read the "sap_setting.yaml" file for setting
+    # Read the "sap_setting.yaml" file for sap_setting dict
     with open('.\\sap_setting.yaml', 'r', encoding='utf-8') as f:
         sap_setting = yaml.load(f, Loader=yaml.FullLoader)
 
-    # sap_setting에 run_sap_script의 리스트를 읽어 해당 리스트에 있는 Script를 순서대로 실행
+    # Read the "run_sap_script" list in sap_setting dict
+    # and excute them in order
     for i, operation in enumerate(sap_setting['run_sap_script'], start=1):
-        # 실행 할 SAP Script(operation)의 Setting 파일을 읽어 script_setting에 저장
-        with open('{}{}.yaml'.format(sap_setting['sap_script_path'], operation), 'r', encoding='utf-8') as f:
+        # Read the script setting file to be executed
+        # and save it script_setting dic
+        with open(f'{sap_setting["sap_script_path"]}{operation}.yaml',
+                  'r', encoding='utf-8') as f:
             script_setting = yaml.load(f, Loader=yaml.FullLoader)
         
-        # 실행 할 SAP Script(operation)의 이름으로 객체 생성
-        if i == 1:
-            locals()[operation] = sap_down.SapDown(operation, script_setting, sap_setting=sap_setting)
-        else:
-            locals()[operation] = sap_down.SapDown(operation, script_setting)
-        print("====== {}/{} Start -{}- Script ===========".format(str(i), len(sap_setting['run_sap_script']), operation))
+        # Create an object with the name of the sap script to be excuted
+        locals()[operation] = lib.SapDown(operation, 
+                                          script_setting, 
+                                          sap_setting=sap_setting)
+        print("===== {}/{} Start -{}- Script ====="\
+            .format(str(i), len(sap_setting['run_sap_script']), operation))
 
-        # 생성된 객체의 Reference DataFrame이 필요하면 다른 객체의 My Dataframe을 복사 해줌
+        # If the created object needs a reference DataFrame,
+        # it copies my DataFrame of another object.
         if len(script_setting['reference_data']) != 0:
-            locals()[operation].set_reference_df(locals()[script_setting['reference_data']].get_my_df())
+            locals()[operation].set_reference_df(
+                locals()[script_setting['reference_data']].get_my_df()
+                )
         
-        # 다운 받은 파일 저장 할 폴더 생성
-        sap_utils.SapUtils.make_file_path(script_setting['file_save_path'])
+        # Make folder for downloading files
+        lib.SapUtils.make_file_path(script_setting['file_save_path'])
+        lib.SapUtils.make_file_path(sap_setting['tempfile_save_path'])
         
-        # 임시 폴더 및 다운 받은 파일 저장 폴더의 기존 파일 삭제
-        sap_utils.SapUtils.delete_file(file_path=sap_setting['tempfile_save_path'], file_all=True)
-        sap_utils.SapUtils.delete_file(file_path=script_setting['file_save_path'], file_all=True)
+        # Delete the old files
+        lib.SapUtils.delete_file(file_path=sap_setting['tempfile_save_path'],
+                                 file_all=True)
+        lib.SapUtils.delete_file(file_path=script_setting['file_save_path'],
+                                 file_all=True)
         
-        # SAP Client 재시작
+        # Restart SAP Client
         locals()[operation].restart_sap_client()
         
-        # SAP Script 실행하여 파일 다운로드
+        # Run SAP Script and download files
         file_name_list = locals()[operation].down_file_sap()
     
     locals()[sap_setting['run_sap_script'][0]].end_sap_client()
-    print("실행이 완료 되었습니다.")
+    print("Run is complete.")
     time.sleep(600)

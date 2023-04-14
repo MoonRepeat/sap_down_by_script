@@ -46,6 +46,8 @@ class SapUtils:
         # 폴더 있는지 확인 후 없으면 생성
         if (not os.path.isdir(file_path)):
             os.makedirs(file_path)
+        
+        return None
     
     def delete_file(**kwargs) -> None:
         """입력 받은 파일 삭제
@@ -87,6 +89,8 @@ class SapUtils:
                     os.remove('{}{}'.format(kwargs['file_path'], file_selected))
                 except:
                     pass
+        
+        return None
 
     def rename_file(file_name: str, new_file_name: str, **kwargs) -> None:
         """파일 이름 변경
@@ -111,6 +115,8 @@ class SapUtils:
                       '{}{}'.format(kwargs['file_path'], new_file_name))
         except:
             pass
+        
+        return None
     
     def move_file(file_name: str, new_file_path: str, **kwargs) -> None:
         """지정된 파일 이동 함수(파일명 변경 포함)
@@ -135,6 +141,8 @@ class SapUtils:
                         '{}{}'.format(new_file_path, file_name))
         except:
             pass
+        
+        return None
 
     def make_str_date(days: int, **kwargs) -> str:
         """일자를 정수로 입력 받아 오늘 기준으로 입력 받은 날짜 만큼 이동한 일자를 반환

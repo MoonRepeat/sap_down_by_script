@@ -6,7 +6,8 @@ import pandas as pd
 import random
 from tqdm import tqdm
 from itertools import product
-from library import sap_utils
+
+from .sap_utils import SapUtils
 
 class SapDown:
     __sap_setting = dict()
@@ -133,7 +134,7 @@ class SapDown:
             file_name = fun_switch[self.__script_setting['run_type']](input_code_list)
             file_name_list.append(file_name)
             
-            sap_utils.SapUtils.move_file(file_name, 
+            SapUtils.move_file(file_name, 
                                          self.__script_setting['file_save_path'], 
                                          file_path=self.__sap_setting['tempfile_save_path'])
             
@@ -188,7 +189,7 @@ class SapDown:
         """
         default_kwargs = {'extension': ''}
         kwargs = { **default_kwargs, **kwargs }
-        file_name = sap_utils.SapUtils.make_str_date(0, type='%y%m%d')        
+        file_name = SapUtils.make_str_date(0, type='%y%m%d')        
         file_name_rule_list = self.__script_setting['file_name']
         reference_df = pd.DataFrame()
         
@@ -228,7 +229,7 @@ class SapDown:
         if iterate_key[0] == '@':
             file_name = iterate_key[1:]
             file_path = self.__script_setting['sap_script_path']
-            file_df = sap_utils.SapUtils.read_xlsx_to_dataframe(file_name, file_path=file_path)
+            file_df = SapUtils.read_xlsx_to_dataframe(file_name, file_path=file_path)
             
             iterate_key = str()
             for i in range(1, len(file_df.columns) + 1):
@@ -306,10 +307,10 @@ class SapDown:
         run_sap_cmd = run_sap_cmd + ' ' + '{arg0} {arg1} {arg2} {arg3} {arg4} {arg5} {arg6}'.format(
             arg0=sap_t_code,
             arg1=self.__script_setting['plant_code'],
-            arg2=sap_utils.SapUtils.make_str_date(self.__script_setting['start_date'], 
+            arg2=SapUtils.make_str_date(self.__script_setting['start_date'], 
                                                   type=SapDown.__sap_setting['date_input_type']
                                                   ),
-            arg3=sap_utils.SapUtils.make_str_date(self.__script_setting['end_date'],
+            arg3=SapUtils.make_str_date(self.__script_setting['end_date'],
                                                   type=SapDown.__sap_setting['date_input_type']
                                                   ),
             arg4=SapDown.__sap_setting['tempfile_save_path'],
@@ -338,7 +339,7 @@ class SapDown:
         try:
             self.__run_sap_script(run_sap_cmd)
             
-            if not sap_utils.SapUtils.chk_file_exist(file_name, file_path=SapDown.__sap_setting['tempfile_save_path']):
+            if not SapUtils.chk_file_exist(file_name, file_path=SapDown.__sap_setting['tempfile_save_path']):
                 file_name = file_name.replace('.txt','-error.txt')
                 with open('{}{}'.format(SapDown.__sap_setting['tempfile_save_path'], file_name), 'w'):
                     pass
@@ -350,7 +351,7 @@ class SapDown:
         else:
             self.__remove_txt_rows_cols(file_name)
             if self.__script_setting['make_data']:
-                if sap_utils.SapUtils.get_file_size(file_name, file_path=SapDown.__sap_setting['tempfile_save_path']) != 0:
+                if SapUtils.get_file_size(file_name, file_path=SapDown.__sap_setting['tempfile_save_path']) != 0:
                     temp_df = self.__change_txt_to_dataframe(file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])[self.__script_setting['data_col_list']]
                     self.__add_my_df(temp_df)
         
@@ -378,7 +379,7 @@ class SapDown:
         pass
     
     # SAP Script 실행 중 시간이 오래 걸리면 Timeout error 발생
-    @sap_utils.SapUtils.timeout
+    @SapUtils.timeout
     def __run_sap_script(self, run_sap_cmd: str) -> None:
         """입력 받은 문자열을 Cmd 라인에서 실행
 
@@ -435,9 +436,9 @@ class SapDown:
                 i = i + 1
         
         # 기존 파일 삭제
-        sap_utils.SapUtils.delete_file(file_path=kwargs['file_path'], file_name=file_name)
+        SapUtils.delete_file(file_path=kwargs['file_path'], file_name=file_name)
         # 신규 파일의 이름을 기존 파일 이름으로 변경
-        sap_utils.SapUtils.rename_file(new_file_name, file_name, file_path=kwargs['file_path'])
+        SapUtils.rename_file(new_file_name, file_name, file_path=kwargs['file_path'])
     
     def __change_txt_to_dataframe(self, file_name: str, **kwargs) -> pd.DataFrame:
         """txt 파일을 입력 받아 DataFarme으로 변환
