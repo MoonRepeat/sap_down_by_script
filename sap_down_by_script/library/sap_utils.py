@@ -8,14 +8,18 @@ import pandas as pd
 
 class SapUtils:
     def timeout(func):
-        """함수가 일정 시간 이상 작동하면 에러를 생성시키는 데코레이터
-            : 사용을 위해서는 Class 속성으로 timeout_time이 정수 형태로 정의 되어 있어야 함
-            : (해당 정수 초만큼 대기 후 초과시 에러 생성)
+        """A decorator that generates an error
+        if the function runs longer than a certain amount of time.
+            : To use, timeout_time must be defined
+            : as an integer as a class property.
+            : (After waiting for the corresponding integer seconds,
+            : an error is generated if exceeded)
         """
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             timeout_time = args[0].timeout_time
-            res = [Exception('function [%s] timeout [%s seconds] exceeded!' % (func.__name__, timeout_time))]
+            res = [Exception('function [%s] timeout [%s seconds] exceeded!'
+                             % (func.__name__, timeout_time))]
             def newFunc():
                 try:
                     res[0] = func(*args, **kwargs)
@@ -36,80 +40,87 @@ class SapUtils:
         return wrapper
     
     def make_file_path(file_path: str) -> None:
-        """file_path의 폴더가 있는지 확인 후 없으면 폴더 생성 폴더가 있을 경우 해당 경로 기존 파일 삭제
+        """After checking whether the folder in file_path exists,
+        create a folder if it does not exist,
+        delete the existing file in that path
 
         Args:
-            file_path (str) : 폴더 전체 경로
+            file_path (str) : File path
         Return:
             None
         """
-        # 폴더 있는지 확인 후 없으면 생성
         if (not os.path.isdir(file_path)):
             os.makedirs(file_path)
+        else:
+            __class__.delete_file(file_path=file_path, file_all=True)
         
         return None
     
     def delete_file(**kwargs) -> None:
-        """입력 받은 파일 삭제
+        """Delete file
 
         **Kwargs:
-            file_path (str)(default : ".\\"): 파일 경로
-            file_name (str): 삭제할 파일의 이름(확장자 포함)
-            file_extension (str): 삭제할 파일의 확장자. 해당 확장자 파일 일괄 삭제
-            file_all (boolean)(default = False): True 입력 할 경우 해당 경로의 모든 파일 삭제
+            file_path (str): (default : ".\\") File path
+            file_name (str): Name of the file to delete (including extension)
+            file_extension (str): Extension of the file to be deleted.
+            file_all (boolean): (default = False)
+                If you enter True, all files in that path will be deleted.
         Return:
             None
         """
-        # kwargs의 default value 설정
+        # Setting the default value of kwargs
         default_kwargs = {'file_path': '.\\', 'file_all': False}
         kwargs = {**default_kwargs, **kwargs}
         if kwargs['file_path'][-1] != '\\':
             kwargs['file_path'] = '{}{}'.format(kwargs['file_path'], '\\')
         
-        # 파일 확장자를 입력 받으면 해당 확장자 파일 모두 삭제
+        # If extension is entered, all files with that extension are deleted.
         if 'file_extension' in kwargs.keys():
             file_list = os.listdir(kwargs['file_path'])
             for file_selected in file_list:
                 if file_selected.endswith(kwargs['file_extension']):
                     try:
-                        os.remove('{}{}'.format(kwargs['file_path'], file_selected))
+                        os.remove('{}{}'.format(kwargs['file_path'], 
+                                                file_selected))
                     except:
                         pass
-        # 파일 이름을 입력 받으면 해당 파일 만 삭제
+        # When a file name is entered, only that file is deleted
         if 'file_name' in kwargs.keys():
             try:
-                os.remove('{}{}'.format(kwargs['file_path'], kwargs['file_name']))
+                os.remove('{}{}'.format(kwargs['file_path'], 
+                                        kwargs['file_name']))
             except:
                 pass
-        # 파일 전체 삭제가 True 일 경우 모든 파일 삭제
+        # Delete all files if delete all files is True
         if kwargs['file_all']:
             file_list = os.listdir(kwargs['file_path'])
             for file_selected in file_list:
                 try:
-                    os.remove('{}{}'.format(kwargs['file_path'], file_selected))
+                    os.remove('{}{}'.format(kwargs['file_path'],
+                                            file_selected))
                 except:
                     pass
         
         return None
 
     def rename_file(file_name: str, new_file_name: str, **kwargs) -> None:
-        """파일 이름 변경
+        """Rename file
 
         Args:
-            file_name (str): 기존 파일 이름
-            new_file_name (str): 변경할 파일 이름
+            file_name (str): File name
+            new_file_name (str): New file name
         **Kwargs:
-            file_path (str): 파일 경로
+            file_path (str): (Default='.\\') file path
         Return:
             None
         """
-        # kwargs의 default value 설정
+        # Setting the default value of kwargs
         default_kwargs = {'file_path': '.\\'}
         kwargs = {**default_kwargs, **kwargs}
         if kwargs['file_path'][-1] != '\\':
             kwargs['file_path'] = '{}{}'.format(kwargs['file_path'], '\\')
         
-        # 파일 이름 변경
+        # Rename file
         try:
             os.rename('{}{}'.format(kwargs['file_path'], file_name),
                       '{}{}'.format(kwargs['file_path'], new_file_name))
@@ -119,23 +130,23 @@ class SapUtils:
         return None
     
     def move_file(file_name: str, new_file_path: str, **kwargs) -> None:
-        """지정된 파일 이동 함수(파일명 변경 포함)
+        """Move file
     
         Args:
-            file_name (str) : 파일 이름
-            new_file_path (str): 이동할 파일 경로
+            file_name (str) : file name
+            new_file_path (str): File path to move
         **Kwargs:
-            file_path : 원래 파일 경로
+            file_path : (Default='.\\') file path
         Return:
             None
         """
-        # kwargs의 default value 설정
+        # Setting the default value of kwargs
         default_kwargs = {'file_path': '.\\'}
         kwargs = {**default_kwargs, **kwargs}
         if kwargs['file_path'][-1] != '\\':
             kwargs['file_path'] = '{}{}'.format(kwargs['file_path'], '\\')
         
-        # 파일 이동
+        # Move file
         try:
             shutil.move('{}{}'.format(kwargs['file_path'], file_name),
                         '{}{}'.format(new_file_path, file_name))
@@ -145,56 +156,61 @@ class SapUtils:
         return None
 
     def make_str_date(days: int, **kwargs) -> str:
-        """일자를 정수로 입력 받아 오늘 기준으로 입력 받은 날짜 만큼 이동한 일자를 반환
+        """Receives an integer and returns the date
+        moved by the input date based on today
 
         Args:
-            days (int): 오늘 일자를 기준으로 이동할 일자를 정수로 입력
+            days (int): Enter the date to move from today's date as an integer
 
         **Kwargs:
-            type (str): 날자를 반환할 타입 (default: %Y.%m.%d)
+            type (str): Type to return date (default: %Y.%m.%d)
 
         Returns:
-            str: 날짜를 문자 형태로 반환
+            str: Return date as str
         """
-        
+        # Setting the default value of kwargs
         default_kwargs = {'type': '%Y.%m.%d'}
         kwargs = { **default_kwargs, **kwargs }
     
-        str_date = (datetime.datetime.today() + datetime.timedelta(days)).strftime(kwargs['type'])
+        str_date = (datetime.datetime.today() + datetime.timedelta(days)).\
+            strftime(kwargs['type'])
         
         return str_date
     
     def get_file_size(file_name: str, **kwargs) -> int:
-        """입력 받은 파일 용량 확인 하여 반환
+        """Check file size
 
         Args:
-            file_name (str): 파일 이름(확장자 포함)
+            file_name (str): File name (including extension)
 
         **Kwargs:
-            file_path (str)(default='.\\'): 파일 경로
+            file_path (str)(default='.\\'): File path
 
         Returns:
-            int: 파일 용량
+            int: File size
         """
+        # Setting the default value of kwargs
         default_kwargs = {'file_path': '.\\'}
         kwargs = {**default_kwargs, **kwargs}
         
-        file_size = os.path.getsize(os.path.join(kwargs['file_path'], file_name))
+        file_size = os.path.getsize(os.path.join(kwargs['file_path'],
+                                                 file_name))
         
         return file_size
     
     def chk_file_exist(file_name: str, **kwargs) -> bool:
-        """해당 되는 파일이 있는지 여부를 확인
+        """Check if the file exists
 
         Args:
-            file_name (ste): 파일 이름
+            file_name (ste): File name
 
         **Kwargs:
-            file_path (str)(default='.\\'): 파일 경로
+            file_path (str)(default='.\\'): File path
 
         Returns:
-            bool: 있으면 True
+            bool: Return True if the file exists
         """
+        # Setting the default value of kwargs
         default_kwargs = {'file_path': '.\\'}
         kwargs = {**default_kwargs, **kwargs}
         
@@ -203,18 +219,18 @@ class SapUtils:
         return checker
     
     def read_xlsx_to_dataframe(file_name: str, **kwargs) -> pd.DataFrame:
-        """지정된 엑셀 파일을 읽어서 pd.DataFrame 형태로 반환
+        """Read excel file and return it as pd.DataFrame
 
         Args:
-            file_name (str): 파일 이름(확장자 포함)
+            file_name (str): File name (including extension)
             
         **kwargs
-            file_path (str): (Default='.\\') 파일 저장된 경로
+            file_path (str): (Default='.\\') file path
 
         Returns:
-            pd.DataFrame: 엑셀 파일의 내용을 DataFrame 형태로 반환
+            pd.DataFrame: Contents of excel file in the form of a DataFrame
         """
-        # kwargs의 default value 설정
+        # Setting the default value of kwargs
         default_kwargs = {'file_path': '.\\'}
         kwargs = {**default_kwargs, **kwargs}
         

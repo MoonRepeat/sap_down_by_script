@@ -36,7 +36,8 @@ class SapDown:
         
         if 'make_data' in script_setting:
             if script_setting['make_data']:
-                self.__sap_my_df = pd.DataFrame(columns=script_setting['data_col_rename_list'])
+                self.__sap_my_df = pd.DataFrame(\
+                    columns=script_setting['data_col_rename_list'])
         if 'reference_data' in script_setting:
             if script_setting['reference_data'] != None:
                 self.__sap_reference_df = pd.DataFrame()
@@ -90,10 +91,10 @@ class SapDown:
             None
         """
         # SAP Client 종료 하기 위한 Command를 실행
-        sap_run_batch1 = '{} {} {}'.format('taskkill /f /im', 
-                                           SapDown.__sap_setting['sap_program_file'],
-                                           '> null 2>&1'
-                                           )
+        sap_run_batch1 = '{} {} {}'.format(\
+            'taskkill /f /im', 
+            SapDown.__sap_setting['sap_program_file'], 
+            '> null 2>&1')
         sap_run_batch2 = 'taskkill /f /im wscript.exe > null 2>&1'
         
         # SAP Client 종료 및 종료 될 때 까지 일정 시간 대기(10초)
@@ -122,6 +123,7 @@ class SapDown:
         Returns:
             list: 생성한 파일들의 이름 list
         """
+        run_type = self.__script_setting['run_type']
         fun_switch = {'@txt': self.__down_txt_from_sap,
                       '@txt_xlsx': self.__down_txt_to_xlsx_from_sap,
                       '@pdf': self.__down_pdf_from_sap
@@ -131,12 +133,13 @@ class SapDown:
         file_name_list = list()
         
         for input_code_list in tqdm(iterate_list):
-            file_name = fun_switch[self.__script_setting['run_type']](input_code_list)
+            file_name = fun_switch[run_type](input_code_list)
             file_name_list.append(file_name)
             
-            SapUtils.move_file(file_name, 
-                                         self.__script_setting['file_save_path'], 
-                                         file_path=self.__sap_setting['tempfile_save_path'])
+            SapUtils.move_file(\
+                file_name, 
+                self.__script_setting['file_save_path'], 
+                file_path=self.__sap_setting['tempfile_save_path'])
             
             file_name_list.append(file_name)
         
@@ -157,7 +160,6 @@ class SapDown:
         for i, input_code in enumerate(input_code_list, start=1):
             if self.__script_setting['input_code' + str(i)][0][0] == '@':
                 rf_code_dict[self.__script_setting['input_code' + str(i)][0][1:]] = input_code
-                
         
         result_df = self.__sap_reference_df.copy()
         
@@ -368,9 +370,11 @@ class SapDown:
         """
         file_name = self.__down_txt_from_sap(input_code_list)
         
-        df = self.__change_txt_to_dataframe(file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])
+        df = self.__change_txt_to_dataframe\
+            (file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])
         new_file_name = file_name.replace('.txt', '.xlsx')
-        self.__change_dataframe_to_xlsx(df, new_file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])
+        self.__change_dataframe_to_xlsx\
+            (df, new_file_name, file_path=SapDown.__sap_setting['tempfile_save_path'])
         
         return new_file_name
     
@@ -440,53 +444,61 @@ class SapDown:
         # 신규 파일의 이름을 기존 파일 이름으로 변경
         SapUtils.rename_file(new_file_name, file_name, file_path=kwargs['file_path'])
     
-    def __change_txt_to_dataframe(self, file_name: str, **kwargs) -> pd.DataFrame:
-        """txt 파일을 입력 받아 DataFarme으로 변환
+    def __change_txt_to_dataframe(self, 
+                                  file_name: str, 
+                                  **kwargs
+                                  ) -> pd.DataFrame:
+        """txt file input and convert to DataFarme
 
         Args:
-            file_name (str): 파일 이름
+            file_name (str): file name
         
         **Kwargs:
-            file_path (str): 파일 경로
+            file_path (str): file path
         
         Return:
             pd.DataFrame: txt의 읽은 값을 DataFrame으로 변환 하여 반환
         """
-        # kwargs의 default value 설정
+        # Setting the default value of kwargs
         default_kwargs = {'file_path': '.\\'}
         kwargs = {**default_kwargs, **kwargs}
         if kwargs['file_path'][-1] != '\\':
-            kwargs['file_path'] = '{}{}'.format(kwargs['file_path'], '\\')
+            kwargs['file_path'] = f"{kwargs['file_path']}\\"
         
-        # txt 파일 용량이 0보타 크면 내용을 읽어 DataFrame으로 변환하여 반환
-        if os.path.getsize('{}{}'.format(kwargs['file_path'], file_name)) > 0:
-            result = pd.read_table('{}{}'.format(kwargs['file_path'], file_name))
+        # If the size of the txt file is greater than 0, 
+        # the contents are read and converted into a DataFrame and returned.
+        if os.path.getsize(f"{kwargs['file_path']}{file_name}") > 0:
+            result = pd.read_table(f"{kwargs['file_path']}{file_name}")
         else:
             result = pd.DataFrame()
         return result
     
-    def __change_dataframe_to_xlsx(self, data_frame, file_name: str, **kwargs) -> bool:
-        """DataFrame을 입력 받아 xlsx 파일로 변경하여 저장
+    def __change_dataframe_to_xlsx(self, 
+                                   data_frame: pd.DataFrame, 
+                                   file_name: str, **kwargs
+                                   ) -> bool:
+        """Receive a DataFrame and change it to an xlsx file and save it
     
         Args:
-            data_frame (DataFrame): 변경 할 DataFrame
-            file_name : 저장 할 파일 이름 (확장자 포함)
+            data_frame (DataFrame): DataFrame to change
+            file_name : File name to save (including extension)
         
         **Kwargs:
-            file_path (str)(default = '.\\'): 저장 할 파일의 경로
+            file_path (str)(default = '.\\'): Path of file to save
         
         Return
-            bool: 생성 성공 여부
+            bool: creation success
         """
-        # kwargs의 default value 설정
+        # Setting the default value of kwargs
         default_kwargs = {'file_path': '.\\'}
         kwargs = {**default_kwargs, **kwargs}
         if kwargs['file_path'][-1] != '\\':
-            kwargs['file_path'] = '{}{}'.format(kwargs['file_path'], '\\')
+            kwargs['file_path'] = f"{kwargs['file_path']}\\"
 
         try:
-            # DataFrame을 xlsx 파일로 변환
-            data_frame.to_excel('{}{}'.format(kwargs['file_path'], file_name), index=False)
+            # Convert DataFrame to xlsx file
+            full_file_name = f"{kwargs['file_path']}{file_name}"
+            data_frame.to_excel(full_file_name, index=False)
         except:
             result = False
         else:
