@@ -3,9 +3,11 @@ import yaml
 
 import library as lib
 
+SAP_SETTING_FILE = './sap_setting.yaml'
+
 if __name__ == '__main__':
     # Read the "sap_setting.yaml" file for sap_setting dict
-    with open('.\\sap_setting.yaml', 'r', encoding='utf-8') as f:
+    with open(SAP_SETTING_FILE, 'r', encoding='utf-8') as f:
         sap_setting = yaml.load(f, Loader=yaml.FullLoader)
 
     # Read the "run_sap_script" list in sap_setting dict

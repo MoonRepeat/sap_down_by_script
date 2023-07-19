@@ -5,7 +5,7 @@ user_pass: "p@ssw0rd"
 
 # Input work list. The value of list must be the same as the SAP vbs script file name
 # ex) run_sap_script: ["sap_ca03", "sap_cs03", "sap_cc03"]
-run_sap_script: ["sap_03_option_list"]
+run_sap_script: ["sap_01_lcs", "sap_02_lcs_sub", "sap_03_option_list", "sap_04_picking_list"]
 
 # Enter the date format of your SAP client
 # ex) 2022.05.25 --> %Y.%m.%d
@@ -13,7 +13,7 @@ date_input_type: "%Y.%m.%d"
 
 # Enter the SAP server setting
 # ex) sap_system: "ABC", sap_client: "100"
-sap_system: "ABC"
+sap_system: "VCE"
 sap_client: "100"
 
 # Enter the location of the temporary folder to use for tasks 

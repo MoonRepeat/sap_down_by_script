@@ -12,10 +12,10 @@ from .sap_utils import SapUtils
 class SapDown:
     __sap_setting = dict()
     
-    def __init__(self, name: str, script_setting: dict, **kwargs):
-        """객체의 속성 인자 정의 및 초기화:
+    def __init__(self, name: str, script_setting: dict, **kwargs) -> None:
+        """Object creation and initialization:
         
-        속성 인자:
+        Attribute Args:
             __script_setting (dict): 해당 SAP Script를 작동하기 위한 설정
             __sap_my_df (DataFrame): 필요시 다른 객체가 사용 할 수 있게 다운 받은 정보를 별도 저장하는 공간
             __sap_reference_df (DataFrame) : 파일 다운에 필요한 참고용 데이터를 다운 객체에서 받아서 보관 하는 공간
@@ -41,6 +41,8 @@ class SapDown:
         if 'reference_data' in script_setting:
             if script_setting['reference_data'] != None:
                 self.__sap_reference_df = pd.DataFrame()
+        
+        return None
 
     def set_reference_df(self, reference_df: pd.DataFrame) -> None:
         """SAP Script를 실행하기 위한 참고용 정보를 저장
