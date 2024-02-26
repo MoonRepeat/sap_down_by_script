@@ -119,31 +119,34 @@ class SapDown:
         
         return None
     
-    def down_file_sap(self) -> list:
+    def run_sap(self) -> list:
         """SAP에서 파일 받는 VBS를 돌리는 시작 함수
 
         Returns:
             list: 생성한 파일들의 이름 list
         """
         run_type = self.__script_setting['run_type']
-        fun_switch = {'@txt': self.__down_txt_from_sap,
-                      '@txt_xlsx': self.__down_txt_to_xlsx_from_sap,
-                      '@pdf': self.__down_pdf_from_sap
-                      }
+        funtion_switch = {'@run': self.__down_run_sap, 
+                          '@txt': self.__down_txt_from_sap, 
+                          '@txt_xlsx': self.__down_txt_to_xlsx_from_sap, 
+                          '@pdf': self.__down_pdf_from_sap
+                          }
         
         iterate_list = self.__make_iterate_list()
         file_name_list = list()
         
         for input_code_list in tqdm(iterate_list):
-            file_name = fun_switch[run_type](input_code_list)
-            file_name_list.append(file_name)
+            file_name = funtion_switch[run_type](input_code_list)
             
-            SapUtils.move_file(\
-                file_name, 
-                self.__script_setting['file_save_path'], 
-                file_path=self.__sap_setting['tempfile_save_path'])
-            
-            file_name_list.append(file_name)
+            if file_name != None:
+                file_name_list.append(file_name)
+                
+                SapUtils.move_file(\
+                    file_name, 
+                    self.__script_setting['file_save_path'], 
+                    file_path=self.__sap_setting['tempfile_save_path'])
+                
+                file_name_list.append(file_name)
         
         return file_name_list
 
@@ -328,6 +331,24 @@ class SapDown:
         
         return  run_sap_cmd
 
+    def __down_run_sap(self, input_code_list: list) -> None:
+        """SAP에서 단순 실행만 실시
+
+        Args:
+            input_code_list (list): SAP에 입력할 입력 값 리스트
+
+        Returns:
+            None
+        """
+        run_sap_cmd = self.__get_sap_cmd(None, input_code_list)
+        
+        try:
+            self.__run_sap_script(run_sap_cmd)
+        except:
+            print("Error happen - input code : {}".format(input_code_list))
+        
+        return None
+
     def __down_txt_from_sap(self, input_code_list: list) -> list:
         """SAP에서 txt 형태의 파일을 다운 받는다. 다운 받은 파일 기반으로 sap_my_df 도 업데이트 한다.
 
@@ -362,7 +383,7 @@ class SapDown:
         return file_name
     
     def __down_txt_to_xlsx_from_sap(self, input_code_list) -> list:
-        """SAP에서 txt 파일 다운 받아서 slsx 파일로 변환
+        """SAP에서 txt 파일 다운 받아서 xlsx 파일로 변환
 
         Args:
             input_code_list (list): SAP에 이력할 입력 값 리스트

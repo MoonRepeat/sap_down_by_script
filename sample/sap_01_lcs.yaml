@@ -34,7 +34,8 @@ iterate_key: "1"
 # 3개 이상이 필요 할 경우 줄을 추가하여 입력 하면 됨
 # ex) input_code4: ["1", "2", "3"]
 #input_code1: ["LCS-E10", "LCS-E20", "LCS-L10", "LCS-E40", "LCS-E50", "LCS-E60"]
-input_code1: ["LCS-E10", "LCS-E20", "LCS-L10", "LCS-E40", "LCS-E50"]
+#input_code1: ["LCS-E10", "LCS-E20", "LCS-L10", "LCS-E40", "LCS-E50"]
+input_code1: ["LCS-E10", "LCS-E40", "LCS-E50"]
 input_code2: []
 input_code3: []
 

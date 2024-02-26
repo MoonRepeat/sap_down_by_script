@@ -1,6 +1,7 @@
 # Enter the SAP download type
-# ex1) @txt --> Download txt file
-# ex2) @txt_xlsx --> Download txt file and converting xlsx file
+# 1) @run --> Just run without dowloading file
+# 2) @txt --> Download txt file
+# 3) @txt_xlsx --> Download txt file and converting xlsx file
 run_type: "@txt_xlsx"
 
 # Enter the folder path to save the final result file

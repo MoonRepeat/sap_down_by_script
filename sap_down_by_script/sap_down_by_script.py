@@ -47,7 +47,9 @@ if __name__ == '__main__':
         locals()[operation].restart_sap_client()
         
         # Run SAP Script and download files
-        file_name_list = locals()[operation].down_file_sap()
+        file_name_list = locals()[operation].run_sap()
+        
+        print(locals()[operation].get_my_df())
     
     locals()[sap_setting['run_sap_script'][0]].end_sap_client()
     print("Run is complete.")
